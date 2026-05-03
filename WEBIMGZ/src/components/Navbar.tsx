@@ -7,13 +7,21 @@ import { useTab } from "@/context/TabContext";
 import { useTranslation } from "@/context/TranslationContext";
 import { Menu, X, Globe } from "lucide-react";
 
-const TAB_ITEMS = [
+/* ✅ FIXED TYPE */
+type TabItem = {
+  id: string;
+  label: string;
+  englishOnly?: boolean;
+};
+
+/* ✅ FIXED ARRAY */
+const TAB_ITEMS: TabItem[] = [
   { id: "overview", label: "nav.overview" },
   { id: "process", label: "nav.process" },
   { id: "voting", label: "nav.voting" },
   { id: "results", label: "nav.results" },
   { id: "chatbot", label: "nav.chat", englishOnly: true },
-] as const;
+];
 
 const LANGUAGES = [
   { code: "en", name: "English", flag: "🇬🇧" },
@@ -26,6 +34,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+
   const { activeTab, setActiveTab, showFlowchart, setShowFlowchart } = useTab();
   const { currentLanguage, setLanguage, t } = useTranslation();
 
@@ -33,7 +42,7 @@ export default function Navbar() {
     setIsScrolled(latest > 50);
   });
 
-  const handleTabClick = (tabId: any) => {
+  const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
     setIsMobileMenuOpen(false);
   };
@@ -51,127 +60,34 @@ export default function Navbar() {
           isScrolled
             ? "bg-[#050505]/70 backdrop-blur-md border-b border-white/5 py-4"
             : "bg-transparent py-6"
-      )}
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-    >
-      <div className="container mx-auto px-6 flex items-center justify-between">
-        {/* Left: Logo/Title */}
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#0050FF] to-[#00D6FF] flex items-center justify-center shadow-[0_0_15px_rgba(0,80,255,0.5)]">
-            <div className="w-2 h-2 bg-white rounded-full" />
-          </div>
-          <span className="text-white font-semibold tracking-tight text-lg">
-            {t("nav.title")}
-          </span>
-        </div>
-
-        {/* Center: Navigation Links - Desktop */}
-        <nav className="hidden md:flex items-center gap-1">
-          {TAB_ITEMS.map((item) => {
-            // Skip Chat tab if not in English
-            if (item.englishOnly && currentLanguage !== "en") {
-              return null;
-            }
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleTabClick(item.id)}
-                className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium tracking-wide transition-all",
-                  activeTab === item.id
-                    ? "bg-[#0050FF] text-white shadow-[0_0_15px_rgba(0,80,255,0.4)]"
-                    : "text-white/60 hover:text-white hover:bg-white/10"
-                )}
-              >
-                {t(item.label)}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Right: CTA, Language Switcher, and Mobile Menu */}
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => {
-              setActiveTab("process");
-              setShowFlowchart(!showFlowchart);
-            }}
-            className="hidden sm:block bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 px-5 py-2.5 rounded-full text-sm font-medium transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(0,214,255,0.2)]">
-            {t("nav.flowchart")}
-          </button>
-
-          {/* Language Switcher - Desktop */}
-          <div className="hidden sm:block relative">
-            <button
-              onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}
-              className="p-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 transition-all hover:scale-105"
-              title="Change Language"
-            >
-              <Globe className="w-5 h-5" />
-            </button>
-
-            {isLanguageMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full mt-2 right-0 bg-[#050505]/95 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden z-10"
-              >
-                {LANGUAGES.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => handleLanguageChange(lang.code)}
-                    className={cn(
-                      "w-full px-4 py-2.5 text-sm font-medium text-left transition-all flex items-center gap-2 whitespace-nowrap",
-                      currentLanguage === lang.code
-                        ? "bg-[#0050FF] text-white"
-                        : "text-white/70 hover:text-white hover:bg-white/10"
-                    )}
-                  >
-                    <span>{lang.flag}</span>
-                    <span>{lang.name}</span>
-                  </button>
-                ))}
-              </motion.div>
-            )}
+        )}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <div className="container mx-auto px-6 flex items-center justify-between">
+          
+          {/* LEFT: LOGO */}
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#0050FF] to-[#00D6FF] flex items-center justify-center shadow-[0_0_15px_rgba(0,80,255,0.5)]">
+              <div className="w-2 h-2 bg-white rounded-full" />
+            </div>
+            <span className="text-white font-semibold tracking-tight text-lg">
+              {t("nav.title")}
+            </span>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-all"
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-6 h-6 text-white" />
-            ) : (
-              <Menu className="w-6 h-6 text-white" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          className="md:hidden bg-[#050505]/95 backdrop-blur-md border-b border-white/5 px-6 py-4"
-        >
-          <nav className="space-y-2 mb-4">
+          {/* CENTER: NAV LINKS */}
+          <nav className="hidden md:flex items-center gap-1">
             {TAB_ITEMS.map((item) => {
-              // Skip Chat tab if not in English
-              if (item.englishOnly && currentLanguage !== "en") {
-                return null;
-              }
+              if (item.englishOnly && currentLanguage !== "en") return null;
+
               return (
                 <button
                   key={item.id}
                   onClick={() => handleTabClick(item.id)}
                   className={cn(
-                    "w-full px-4 py-3 rounded-lg text-sm font-medium tracking-wide transition-all text-left",
+                    "px-4 py-2 rounded-lg text-sm font-medium tracking-wide transition-all",
                     activeTab === item.id
                       ? "bg-[#0050FF] text-white shadow-[0_0_15px_rgba(0,80,255,0.4)]"
                       : "text-white/60 hover:text-white hover:bg-white/10"
@@ -183,66 +99,90 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Language Switcher - Mobile */}
-          <div className="border-t border-white/10 pt-4">
+          {/* RIGHT SIDE */}
+          <div className="flex items-center gap-3">
+
+            {/* FLOWCHART BUTTON */}
             <button
-              onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}
-              className="w-full flex items-center justify-between px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-all"
+              onClick={() => {
+                setActiveTab("process");
+                setShowFlowchart(!showFlowchart);
+              }}
+              className="hidden sm:block bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 px-5 py-2.5 rounded-full text-sm font-medium transition-all hover:scale-105"
             >
-              <span className="flex items-center gap-2">
-                <Globe className="w-4 h-4" />
-                Language
-              </span>
-              <span>
-                {LANGUAGES.find((l) => l.code === currentLanguage)?.flag}
-              </span>
+              {t("nav.flowchart")}
             </button>
 
-            {isLanguageMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-2 space-y-1"
+            {/* LANGUAGE SWITCH */}
+            <div className="hidden sm:block relative">
+              <button
+                onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}
+                className="p-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 transition-all"
               >
-                {LANGUAGES.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => handleLanguageChange(lang.code)}
-                    className={cn(
-                      "w-full px-4 py-2 text-sm text-left rounded-lg flex items-center gap-2 transition-all",
-                      currentLanguage === lang.code
-                        ? "bg-[#0050FF] text-white"
-                        : "text-white/70 hover:text-white hover:bg-white/10"
-                    )}
-                  >
-                    <span>{lang.flag}</span>
-                    <span>{lang.name}</span>
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </div>
-        </motion.div>
-      )}
-    </motion.header>
+                <Globe className="w-5 h-5" />
+              </button>
 
-    {/* Chat Availability Notice - Show when not in English */}
-    {currentLanguage !== "en" && (
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        className="bg-[#0050FF]/20 border-b border-[#0050FF]/50 backdrop-blur-md px-6 py-3"
-      >
-        <div className="container mx-auto flex items-center gap-3">
-          <span className="text-[#00D6FF]">ℹ️</span>
-          <p className="text-white/80 text-sm">
-            {t("notice")}
-          </p>
+              {isLanguageMenuOpen && (
+                <div className="absolute top-full mt-2 right-0 bg-[#050505]/95 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden z-10">
+                  {LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className={cn(
+                        "w-full px-4 py-2 text-sm text-left flex items-center gap-2",
+                        currentLanguage === lang.code
+                          ? "bg-[#0050FF] text-white"
+                          : "text-white/70 hover:text-white hover:bg-white/10"
+                      )}
+                    >
+                      <span>{lang.flag}</span>
+                      <span>{lang.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* MOBILE MENU BUTTON */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-white/10"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6 text-white" />
+              ) : (
+                <Menu className="w-6 h-6 text-white" />
+              )}
+            </button>
+          </div>
         </div>
-      </motion.div>
-    )}
-  </>
+
+        {/* MOBILE MENU */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-[#050505]/95 px-6 py-4">
+            {TAB_ITEMS.map((item) => {
+              if (item.englishOnly && currentLanguage !== "en") return null;
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleTabClick(item.id)}
+                  className="block w-full text-left px-4 py-2 text-white/70 hover:text-white"
+                >
+                  {t(item.label)}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </motion.header>
+
+      {/* NOTICE */}
+      {currentLanguage !== "en" && (
+        <div className="bg-[#0050FF]/20 px-6 py-3 text-white text-sm text-center">
+          {t("notice")}
+        </div>
+      )}
+    </>
   );
 }
